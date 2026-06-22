@@ -1,0 +1,1813 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Green Plant Nursery | Premium Plants Online</title>
+    <meta
+      name="description"
+      content="All India Home Delivery. Premium quality plants by Alamgir."
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0B8F3A",
+              "primary-dark": "#065F2C",
+              "primary-light": "#E8F8EC",
+            },
+            fontFamily: {
+              sans: ["Poppins", "sans-serif"],
+            },
+            boxShadow: {
+              glass: "0 8px 32px 0 rgba(11, 143, 58, 0.1)",
+              floating: "0 10px 25px -5px rgba(11, 143, 58, 0.4)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      /* Custom Styles & Utilities */
+      body {
+        font-family: "Poppins", sans-serif;
+        overflow-x: hidden;
+        background-color: #fcfdfc;
+      }
+
+      .glass-nav {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(11, 143, 58, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #0b8f3a;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #065f2c;
+      }
+
+      /* Animations */
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes heartBeat {
+        0% {
+          transform: scale(1);
+        }
+        25% {
+          transform: scale(1.3);
+        }
+        50% {
+          transform: scale(1);
+        }
+        75% {
+          transform: scale(1.3);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .heart-active {
+        animation: heartBeat 0.5s ease-in-out;
+        color: #ef4444 !important;
+      }
+
+      @keyframes blob {
+        0% {
+          border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+        50% {
+          border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+        }
+        100% {
+          border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+      }
+      .blob-shape {
+        animation: blob 8s ease-in-out infinite;
+      }
+
+      /* Hide Scrollbar for horizontal sliders */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      /* Product Image Zoom */
+      .product-img-wrap {
+        overflow: hidden;
+      }
+      .product-img-wrap img {
+        transition: transform 0.5s ease;
+      }
+      .product-card:hover .product-img-wrap img {
+        transform: scale(1.1);
+      }
+
+      /* Floating Leaves Canvas */
+      #leaf-container {
+        pointer-events: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        overflow: hidden;
+      }
+      .leaf {
+        position: absolute;
+        top: -50px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        opacity: 0.6;
+      }
+
+      /* Progress Bar */
+      #scroll-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 4px;
+        background: #0b8f3a;
+        z-index: 1000;
+        width: 0%;
+        transition: width 0.1s;
+      }
+
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body class="text-gray-800 antialiased relative">
+    <div id="scroll-progress"></div>
+    <div id="leaf-container"></div>
+
+    <!-- Animated Background Blobs -->
+    <div
+      class="fixed top-20 -left-20 w-96 h-96 bg-primary-light rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-float"
+      style="z-index: -1"
+    ></div>
+    <div
+      class="fixed top-40 -right-20 w-96 h-96 bg-green-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-float"
+      style="animation-delay: 2s; z-index: -1"
+    ></div>
+
+    <!-- Top Contact Bar -->
+    <div
+      class="bg-primary-dark text-white text-xs md:text-sm py-2 px-4 relative z-50"
+    >
+      <div
+        class="container mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-1 md:gap-0"
+      >
+        <div class="flex items-center gap-4">
+          <span><i class="fa-solid fa-phone mr-1"></i> 8282016187</span>
+          <span class="hidden md:inline"
+            ><i class="fa-solid fa-envelope mr-1"></i> Green Plant Nursery</span
+          >
+          <span class="font-bold text-yellow-300"
+            ><i class="fa-solid fa-user-tie mr-1"></i> Proprietor: ALAMGIR</span
+          >
+        </div>
+        <div class="flex items-center gap-4 font-medium tracking-wide">
+          <span
+            ><i class="fa-solid fa-truck-fast mr-1"></i> All India
+            Delivery</span
+          >
+          <span class="text-red-300"
+            ><i class="fa-solid fa-ban mr-1"></i> No COD</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav
+      class="glass-nav sticky top-0 z-40 transition-all duration-300"
+      id="navbar"
+    >
+      <div
+        class="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center"
+      >
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-2 group">
+          <div
+            class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white text-xl blob-shape shadow-lg group-hover:scale-110 transition-transform"
+          >
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-xl md:text-2xl text-primary leading-none">
+              Green Plant
+            </h1>
+            <span
+              class="text-[10px] md:text-xs text-primary-dark font-semibold tracking-widest uppercase"
+              >Nursery</span
+            >
+          </div>
+        </a>
+
+        <!-- Desktop Links -->
+        <div class="hidden md:flex items-center gap-8 font-medium">
+          <a href="#home" class="hover:text-primary transition-colors">Home</a>
+          <a href="#trending" class="hover:text-primary transition-colors"
+            >Trending</a
+          >
+          <a href="#featured" class="hover:text-primary transition-colors"
+            >Special</a
+          >
+          <a href="#guarantee" class="hover:text-primary transition-colors"
+            >Guarantee</a
+          >
+        </div>
+
+        <!-- Icons (Cart & Wishlist) -->
+        <div class="flex items-center gap-4 md:gap-6">
+          <!-- Compare Icon -->
+          <button
+            onclick="openCompareModal()"
+            class="relative text-gray-600 hover:text-primary transition-colors hidden md:block"
+          >
+            <i class="fa-solid fa-scale-balanced text-xl"></i>
+            <span
+              id="compare-count"
+              class="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center scale-0 transition-transform"
+              >0</span
+            >
+          </button>
+          <!-- Wishlist Icon -->
+          <button
+            onclick="toggleWishlistDrawer()"
+            class="relative text-gray-600 hover:text-primary transition-colors"
+          >
+            <i class="fa-solid fa-heart text-xl"></i>
+            <span
+              id="wishlist-count"
+              class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center scale-0 transition-transform"
+              >0</span
+            >
+          </button>
+          <!-- Cart Icon -->
+          <button
+            onclick="toggleCartDrawer()"
+            class="relative text-gray-600 hover:text-primary transition-colors bg-primary-light p-2 md:p-3 rounded-full"
+          >
+            <i
+              class="fa-solid fa-cart-shopping text-primary text-lg md:text-xl"
+            ></i>
+            <span
+              id="cart-count"
+              class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md"
+              >0</span
+            >
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <section
+      id="home"
+      class="relative pt-10 pb-20 md:pt-20 md:pb-32 overflow-hidden"
+    >
+      <div
+        class="container mx-auto px-4 flex flex-col md:flex-row items-center relative z-10"
+      >
+        <div class="w-full md:w-1/2 md:pr-10 z-10 gs-reveal">
+          <div
+            class="inline-block bg-primary-light text-primary-dark font-semibold px-4 py-1 rounded-full text-sm mb-6 shadow-sm border border-primary/20"
+          >
+            🌿 Welcome to India's Premium Nursery
+          </div>
+          <h2
+            class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6"
+          >
+            Bring
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-green-400"
+              >Nature</span
+            >
+            Into Your Life
+          </h2>
+          <p class="text-gray-600 mb-8 text-lg md:text-xl leading-relaxed">
+            Quality checked, disease-free exotic and native plants delivered
+            directly to your doorstep anywhere in India. Handpicked by Alamgir.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a
+              href="#trending"
+              class="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-full shadow-floating transition-all hover:-translate-y-1"
+            >
+              Shop Now <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+            <a
+              href="#guarantee"
+              class="bg-white border-2 border-primary-light hover:border-primary text-primary-dark font-bold py-3 px-8 rounded-full transition-all"
+            >
+              Our Guarantee
+            </a>
+          </div>
+        </div>
+
+        <!-- Hero Image 3D effect -->
+        <div
+          class="w-full md:w-1/2 mt-12 md:mt-0 relative gs-reveal"
+          style="perspective: 1000px"
+        >
+          <div
+            class="relative w-full max-w-lg mx-auto transform transition-transform duration-700 hover:rotate-y-12 hover:rotate-x-12"
+            id="hero-image-wrapper"
+          >
+            <div
+              class="absolute inset-0 bg-primary rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse"
+            ></div>
+            <img
+              src="./img/olena-bohovyk-TpALGJoHFP8-unsplash.jpg"
+              alt="Beautiful Monstera Plant"
+              class="relative z-10 w-full h-auto rounded-[2rem] shadow-2xl border-4 border-white object-cover aspect-[4/5]"
+            />
+
+            <!-- Floating Badge -->
+            <div
+              class="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl z-20 animate-float flex items-center gap-3"
+            >
+              <div class="bg-green-100 text-primary p-3 rounded-full text-xl">
+                <i class="fa-solid fa-certificate"></i>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500 font-bold uppercase">
+                  100% Assured
+                </p>
+                <p class="text-sm font-bold text-gray-800">Healthy Plants</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 bg-primary-dark text-white relative z-10">
+      <div class="container mx-auto px-4">
+        <div
+          class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
+          id="stats-section"
+        >
+          <div class="gs-stat">
+            <i
+              class="fa-solid fa-seedling text-3xl md:text-4xl text-green-300 mb-3"
+            ></i>
+            <h3 class="text-3xl md:text-5xl font-bold mb-1">
+              <span class="counter" data-target="10000">0</span>+
+            </h3>
+            <p
+              class="text-sm md:text-base text-green-100 opacity-80 uppercase tracking-wider"
+            >
+              Plants Delivered
+            </p>
+          </div>
+          <div class="gs-stat">
+            <i
+              class="fa-solid fa-face-smile text-3xl md:text-4xl text-green-300 mb-3"
+            ></i>
+            <h3 class="text-3xl md:text-5xl font-bold mb-1">
+              <span class="counter" data-target="5000">0</span>+
+            </h3>
+            <p
+              class="text-sm md:text-base text-green-100 opacity-80 uppercase tracking-wider"
+            >
+              Happy Customers
+            </p>
+          </div>
+          <div class="gs-stat">
+            <i
+              class="fa-solid fa-map-location-dot text-3xl md:text-4xl text-green-300 mb-3"
+            ></i>
+            <h3 class="text-3xl md:text-5xl font-bold mb-1">
+              <span class="counter" data-target="28">0</span>+
+            </h3>
+            <p
+              class="text-sm md:text-base text-green-100 opacity-80 uppercase tracking-wider"
+            >
+              States Served
+            </p>
+          </div>
+          <div class="gs-stat">
+            <i
+              class="fa-solid fa-leaf text-3xl md:text-4xl text-green-300 mb-3"
+            ></i>
+            <h3 class="text-3xl md:text-5xl font-bold mb-1">
+              <span class="counter" data-target="100">0</span>+
+            </h3>
+            <p
+              class="text-sm md:text-base text-green-100 opacity-80 uppercase tracking-wider"
+            >
+              Plant Varieties
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <h3 class="text-2xl md:text-3xl font-bold text-center mb-10 gs-reveal">
+          🥇 Best Selling Categories
+        </h3>
+        <div
+          class="flex justify-center overflow-x-auto no-scrollbar gap-6 pb-6 snap-x"
+          id="categories-container"
+        >
+          <!-- Categories injected via JS -->
+        </div>
+      </div>
+    </section>
+
+    <section id="featured" class="py-16 bg-primary-light overflow-hidden">
+      <div class="container mx-auto px-4">
+        <div
+          class="bg-white rounded-[2rem] shadow-xl p-6 md:p-12 flex flex-col md:flex-row items-center gap-10 gs-reveal relative"
+        >
+          <div
+            class="absolute top-0 right-0 bg-red-500 text-white font-bold py-2 px-6 rounded-bl-2xl rounded-tr-[2rem] shadow-lg"
+          >
+            🏆 Product Of The Month
+          </div>
+          <div class="w-full md:w-1/2 product-img-wrap rounded-2xl relative">
+            <img
+              src="./img/miyazaki-mango-plant.jpg"
+              alt="Miyazaki Mango"
+              class="w-full h-auto rounded-2xl object-cover aspect-square md:aspect-auto"
+            />
+            <div
+              class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-primary flex items-center shadow"
+            >
+              <i class="fa-solid fa-sun mr-1"></i> Suitable for Tropical Climate
+            </div>
+          </div>
+          <div class="w-full md:w-1/2">
+            <div class="flex text-yellow-400 text-sm mb-2">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i
+              ><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i
+              ><i class="fa-solid fa-star-half-stroke"></i>
+              <span class="text-gray-500 ml-2">(128 Reviews)</span>
+            </div>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+              Original Miyazaki Mango Plant (Grafted)
+            </h3>
+            <p class="text-gray-600 mb-6 leading-relaxed">
+              The world's most expensive mango variety, now available for your
+              home garden. 100% authentic grafted plant, healthy root system,
+              ready to thrive in Indian climates. High yield potential.
+            </p>
+
+            <div class="flex items-end gap-4 mb-8">
+              <span class="text-4xl font-black text-primary">₹1,499</span>
+              <span class="text-xl text-gray-400 line-through mb-1"
+                >₹2,500</span
+              >
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+              <button
+                onclick="
+                  addToCart(
+                    'p_0',
+                    'Original Miyazaki Mango Plant',
+                    1499,
+                    'https://images.unsplash.com/photo-1596547609652-9fc5d8d42409?auto=format&fit=crop&w=200&q=80',
+                  )
+                "
+                class="bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-xl shadow-lg flex-1 flex justify-center items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              >
+                <i class="fa-solid fa-cart-plus"></i> Add To Cart
+              </button>
+              <button
+                onclick="
+                  orderDirectlyWhatsApp('Original Miyazaki Mango Plant', 1499)
+                "
+                class="bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-4 px-8 rounded-xl shadow-lg flex justify-center items-center gap-2 transition-all hover:scale-105 active:scale-95"
+              >
+                <i class="fa-brands fa-whatsapp text-xl"></i> Order Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="trending" class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-12 gs-reveal">
+          <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+            🔥 Trending Products
+          </h2>
+          <p class="text-gray-500 max-w-2xl mx-auto">
+            Discover our most loved and frequently ordered plants across India.
+            Carefully packed and delivered safely.
+          </p>
+        </div>
+
+        <!-- Products Grid -->
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+          id="products-grid"
+        >
+          <!-- Products injected via JS -->
+        </div>
+
+        <!-- View All Button -->
+        <div class="mt-12 text-center gs-reveal">
+          <a
+            href="all-products.html"
+            class="inline-flex items-center justify-center gap-2 bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-10 rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1"
+          >
+            View All Products <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="guarantee"
+      class="py-16 bg-primary-dark text-white relative overflow-hidden"
+    >
+      <div
+        class="absolute inset-0 opacity-10"
+        style="
+          background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='#ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&quot;);
+        "
+      ></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <h2 class="text-3xl font-extrabold text-center mb-12">
+          🌱 Our Plant Health Guarantee
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Trust Item 1 -->
+          <div
+            class="glass-card bg-white/10 p-6 rounded-2xl flex items-start gap-4 gs-reveal"
+          >
+            <div
+              class="bg-white text-primary p-3 rounded-full text-2xl flex-shrink-0"
+            >
+              <i class="fa-solid fa-box-open"></i>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold mb-2">Secure Packaging</h4>
+              <p class="text-green-100 text-sm">
+                Specialized multi-layer corrugated boxes ensure plants remain
+                intact, hydrated, and breathing during transit.
+              </p>
+            </div>
+          </div>
+          <!-- Trust Item 2 -->
+          <div
+            class="glass-card bg-white/10 p-6 rounded-2xl flex items-start gap-4 gs-reveal"
+          >
+            <div
+              class="bg-white text-primary p-3 rounded-full text-2xl flex-shrink-0"
+            >
+              <i class="fa-solid fa-microscope"></i>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold mb-2">Quality Inspected</h4>
+              <p class="text-green-100 text-sm">
+                Every plant is checked for healthy root systems, pest-free
+                leaves, and robust stems before dispatch.
+              </p>
+            </div>
+          </div>
+          <!-- Trust Item 3 -->
+          <div
+            class="glass-card bg-white/10 p-6 rounded-2xl flex items-start gap-4 gs-reveal"
+          >
+            <div
+              class="bg-white text-primary p-3 rounded-full text-2xl flex-shrink-0"
+            >
+              <i class="fa-solid fa-truck-fast"></i>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold mb-2">Pan India Delivery</h4>
+              <p class="text-green-100 text-sm">
+                Safe and swift delivery across 28+ states. We use premium
+                courier partners for minimum transit time.
+              </p>
+            </div>
+          </div>
+          <!-- Trust Item 4 -->
+          <div
+            class="glass-card bg-white/10 p-6 rounded-2xl flex items-start gap-4 gs-reveal"
+          >
+            <div
+              class="bg-white text-primary p-3 rounded-full text-2xl flex-shrink-0"
+            >
+              <i class="fa-solid fa-shield-virus"></i>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold mb-2">Disease-Free</h4>
+              <p class="text-green-100 text-sm">
+                Organically treated and monitored in our nursery to ensure you
+                receive 100% disease-free saplings.
+              </p>
+            </div>
+          </div>
+          <!-- Trust Item 5 -->
+          <div
+            class="glass-card bg-white/10 p-6 rounded-2xl flex items-start gap-4 gs-reveal"
+          >
+            <div
+              class="bg-white text-primary p-3 rounded-full text-2xl flex-shrink-0"
+            >
+              <i class="fa-solid fa-headset"></i>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold mb-2">Expert Support</h4>
+              <p class="text-green-100 text-sm">
+                Post-purchase guidance available directly on WhatsApp to help
+                you grow and care for your plants.
+              </p>
+            </div>
+          </div>
+          <!-- Trust Item 6 -->
+          <div
+            class="glass-card bg-white/10 p-6 rounded-2xl flex items-start gap-4 gs-reveal"
+          >
+            <div
+              class="bg-white text-primary p-3 rounded-full text-2xl flex-shrink-0"
+            >
+              <i class="fa-solid fa-credit-card"></i>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold mb-2">Secure Payments</h4>
+              <p class="text-green-100 text-sm">
+                Prepaid orders only (No COD) to ensure genuine buyers and faster
+                processing. 100% secure transfers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-16 bg-white border-b border-gray-100">
+      <div class="container mx-auto px-4">
+        <h3 class="text-2xl font-bold mb-8 gs-reveal">
+          <i class="fa-solid fa-clock-rotate-left mr-2 text-primary"></i>
+          Recently Viewed & Recommendations
+        </h3>
+        <div
+          class="flex overflow-x-auto no-scrollbar gap-6 pb-4 snap-x"
+          id="recent-container"
+        >
+          <!-- Injected via JS. Using placeholders for styling context -->
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-gray-900 text-white pt-16 pb-24 md:pb-8">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+          <div>
+            <h2 class="text-2xl font-bold text-primary mb-4">
+              Green Plant Nursery
+            </h2>
+            <p class="text-gray-400 mb-4 text-sm leading-relaxed">
+              India's most trusted online nursery for exotic fruit plants,
+              native trees, and indoor beauties. Quality guaranteed by Alamgir.
+            </p>
+            <div class="flex gap-4">
+              <a
+                href="#"
+                class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition"
+                ><i class="fa-brands fa-facebook-f"></i
+              ></a>
+              <a
+                href="#"
+                class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition"
+                ><i class="fa-brands fa-instagram"></i
+              ></a>
+              <a
+                href="#"
+                class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-[#25D366] transition"
+                ><i class="fa-brands fa-whatsapp"></i
+              ></a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-4 border-b border-gray-700 pb-2">
+              Quick Links
+            </h3>
+            <ul class="text-gray-400 text-sm space-y-2">
+              <li>
+                <a href="#" class="hover:text-white transition"
+                  ><i class="fa-solid fa-angle-right mr-2 text-primary"></i>
+                  Home</a
+                >
+              </li>
+              <li>
+                <a href="#trending" class="hover:text-white transition"
+                  ><i class="fa-solid fa-angle-right mr-2 text-primary"></i>
+                  Trending Plants</a
+                >
+              </li>
+              <li>
+                <button
+                  onclick="toggleWishlistDrawer()"
+                  class="hover:text-white transition"
+                >
+                  <i class="fa-solid fa-angle-right mr-2 text-primary"></i> My
+                  Wishlist
+                </button>
+              </li>
+              <li>
+                <a href="#guarantee" class="hover:text-white transition"
+                  ><i class="fa-solid fa-angle-right mr-2 text-primary"></i>
+                  Plant Guarantee</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold mb-4 border-b border-gray-700 pb-2">
+              Contact Us
+            </h3>
+            <ul class="text-gray-400 text-sm space-y-4">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-user-tie mt-1 text-primary"></i>
+                <span>Proprietor: ALAMGIR</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i
+                  class="fa-brands fa-whatsapp mt-1 text-[#25D366] text-lg"
+                ></i>
+                <span
+                  >WhatsApp/Call: <br />
+                  <a
+                    href="https://wa.me/918282016187"
+                    target="_blank"
+                    class="text-white font-bold hover:underline"
+                    >8282016187</a
+                  ></span
+                >
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-location-dot mt-1 text-primary"></i>
+                <span
+                  >All India Home Delivery<br /><small
+                    class="text-red-400 font-bold"
+                    >*No Cash On Delivery (Prepaid Only)</small
+                  ></span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-800 pt-8 text-center text-gray-500 text-xs"
+        >
+          &copy; <span id="year"></span> Green Plant Nursery. All Rights
+          Reserved.
+        </div>
+      </div>
+    </footer>
+
+    <!-- Overlay for Drawers -->
+    <div
+      id="drawer-overlay"
+      onclick="closeAllDrawers()"
+      class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm"
+    ></div>
+
+    <!-- Smart Shopping Cart Drawer -->
+    <div
+      id="cart-drawer"
+      class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white z-[60] shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col"
+    >
+      <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+          <i class="fa-solid fa-cart-shopping text-primary"></i> Your Cart
+        </h2>
+        <button
+          onclick="toggleCartDrawer()"
+          class="text-gray-500 hover:text-red-500 text-2xl transition-colors"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div
+        id="cart-items-container"
+        class="flex-1 overflow-y-auto p-4 space-y-4 bg-white"
+      >
+        <!-- Cart Items JS Injection -->
+        <div class="text-center text-gray-400 mt-10 hidden" id="empty-cart-msg">
+          <i class="fa-solid fa-basket-shopping text-4xl mb-3"></i>
+          <p>Your cart is empty.</p>
+        </div>
+      </div>
+      <div class="p-4 border-t bg-gray-50">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-bold text-gray-600">Total:</span>
+          <span class="font-bold text-2xl text-primary" id="cart-total"
+            >₹0</span
+          >
+        </div>
+        <button
+          onclick="checkoutViaWhatsApp()"
+          class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95"
+        >
+          <i class="fa-brands fa-whatsapp text-xl"></i> Checkout via WhatsApp
+        </button>
+        <p class="text-[10px] text-center text-gray-500 mt-2">
+          Order details will be sent directly to our WhatsApp.
+        </p>
+      </div>
+    </div>
+
+    <!-- Wishlist Drawer -->
+    <div
+      id="wishlist-drawer"
+      class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white z-[60] shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col"
+    >
+      <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+          <i class="fa-solid fa-heart text-red-500"></i> My Wishlist
+        </h2>
+        <button
+          onclick="toggleWishlistDrawer()"
+          class="text-gray-500 hover:text-red-500 text-2xl transition-colors"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div
+        id="wishlist-items-container"
+        class="flex-1 overflow-y-auto p-4 space-y-4 bg-white"
+      >
+        <!-- Wishlist Items JS Injection -->
+      </div>
+    </div>
+
+    <!-- Compare Floating Button (Appears when items are selected) -->
+    <button
+      id="compare-float-btn"
+      onclick="openCompareModal()"
+      class="fixed bottom-24 right-4 bg-blue-600 text-white px-4 py-3 rounded-full shadow-xl z-40 hidden items-center gap-2 font-bold animate-bounce hover:bg-blue-700 transition"
+    >
+      <i class="fa-solid fa-scale-balanced"></i> Compare (<span
+        id="compare-float-count"
+        >0</span
+      >)
+    </button>
+
+    <!-- Compare Modal -->
+    <div
+      id="compare-modal"
+      class="fixed inset-0 z-[70] hidden items-center justify-center p-4"
+    >
+      <div
+        class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onclick="closeCompareModal()"
+      ></div>
+      <div
+        class="bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col relative z-10 shadow-2xl animate-[float_0.3s_ease-out]"
+      >
+        <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <i class="fa-solid fa-scale-balanced text-blue-500"></i> Product
+            Comparison
+          </h2>
+          <button
+            onclick="closeCompareModal()"
+            class="text-gray-500 hover:text-red-500 text-2xl transition-colors"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="p-4 overflow-auto flex-1 no-scrollbar">
+          <table class="w-full text-left border-collapse min-w-[600px]">
+            <thead id="compare-thead">
+              <!-- Headers injected -->
+            </thead>
+            <tbody id="compare-tbody">
+              <!-- Rows injected -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image Gallery Modal -->
+    <div
+      id="gallery-modal"
+      class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/90 backdrop-blur-md"
+    >
+      <button
+        onclick="closeGallery()"
+        class="absolute top-4 right-4 text-white text-4xl hover:text-gray-300 z-10"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img
+        id="gallery-img"
+        src=""
+        alt="Fullscreen view"
+        class="max-w-[95vw] max-h-[90vh] object-contain rounded-lg shadow-2xl transition-transform duration-300"
+      />
+    </div>
+
+    <!-- Floating WhatsApp Widget -->
+    <div class="fixed bottom-6 right-4 md:right-6 z-40 group">
+      <div
+        class="absolute bottom-full right-0 mb-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 w-48 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 origin-bottom-right"
+      >
+        <div
+          class="text-xs font-bold text-gray-500 uppercase mb-2 border-b pb-1"
+        >
+          How can we help?
+        </div>
+        <ul class="space-y-1">
+          <li>
+            <a
+              href="https://wa.me/918282016187?text=Hello%20Green%20Plant%20Nursery,%20I%20want%20to%20chat."
+              target="_blank"
+              class="flex items-center gap-2 text-sm text-gray-700 hover:text-primary py-1"
+              ><i class="fa-solid fa-comments text-primary w-4"></i> Chat Now</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://wa.me/918282016187?text=I%20have%20a%20question%20about%20plant%20care."
+              target="_blank"
+              class="flex items-center gap-2 text-sm text-gray-700 hover:text-primary py-1"
+              ><i class="fa-solid fa-leaf text-primary w-4"></i> Ask Care
+              Info</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://wa.me/918282016187?text=I%20want%20to%20know%20about%20delivery%20details."
+              target="_blank"
+              class="flex items-center gap-2 text-sm text-gray-700 hover:text-primary py-1"
+              ><i class="fa-solid fa-truck text-primary w-4"></i> Delivery
+              Enquiry</a
+            >
+          </li>
+        </ul>
+      </div>
+      <a
+        href="https://wa.me/918282016187"
+        target="_blank"
+        class="w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center text-3xl shadow-[0_4px_15px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform relative z-10"
+      >
+        <i class="fa-brands fa-whatsapp"></i>
+        <span
+          class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-ping"
+        ></span>
+        <span
+          class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"
+        ></span>
+      </a>
+    </div>
+
+    <!-- Mobile Sticky Bottom Bar -->
+    <div
+      class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 z-40 pb-safe"
+    >
+      <button
+        onclick="window.scrollTo(0, 0)"
+        class="flex flex-col items-center text-gray-500 hover:text-primary p-2"
+      >
+        <i class="fa-solid fa-house text-lg mb-1"></i>
+        <span class="text-[10px] font-medium">Home</span>
+      </button>
+      <button
+        onclick="toggleWishlistDrawer()"
+        class="flex flex-col items-center text-gray-500 hover:text-primary p-2 relative"
+      >
+        <i class="fa-solid fa-heart text-lg mb-1"></i>
+        <span class="text-[10px] font-medium">Wishlist</span>
+        <span
+          id="mobile-wishlist-count"
+          class="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full hidden"
+        ></span>
+      </button>
+      <a
+        href="https://wa.me/918282016187"
+        target="_blank"
+        class="flex flex-col items-center text-white bg-[#25D366] px-4 py-2 rounded-full -mt-6 shadow-lg shadow-green-200 border-4 border-white"
+      >
+        <i class="fa-brands fa-whatsapp text-xl mb-0.5"></i>
+        <span class="text-[10px] font-bold">Order</span>
+      </a>
+      <button
+        onclick="toggleCartDrawer()"
+        class="flex flex-col items-center text-gray-500 hover:text-primary p-2 relative"
+      >
+        <i class="fa-solid fa-cart-shopping text-lg mb-1"></i>
+        <span class="text-[10px] font-medium">Cart</span>
+        <span
+          id="mobile-cart-count"
+          class="absolute top-0 right-1 bg-orange-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold"
+          >0</span
+        >
+      </button>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div
+      id="toast-container"
+      class="fixed top-20 right-4 z-[100] flex flex-col gap-2 pointer-events-none"
+    ></div>
+
+    <script>
+      // Set current year
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Application State
+      let cart = [];
+      let wishlist = [];
+      let compareList = [];
+      let recentlyViewed = [];
+
+      // Mock Database (Products)
+      const products = [
+        {
+          id: "p_1",
+          name: "White Water Apple",
+          price: 400,
+          rating: 4.8,
+          reviews: 45,
+          image:
+            "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=400&q=80",
+          badge: "✔ Suitable for West Bengal",
+          isTrending: true,
+          category: "Fruit",
+          specs: {
+            growth: "Fast",
+            fruitSize: "Medium",
+            yield: "High",
+            climate: "Humid/Tropical",
+            maintenance: "Low",
+          },
+        },
+        {
+          id: "p_2",
+          name: "Red Malta (Sweet Orange)",
+          price: 350,
+          rating: 4.9,
+          reviews: 112,
+          image:
+            "https://images.unsplash.com/photo-1582281298055-e25b84a30b0b?auto=format&fit=crop&w=400&q=80",
+          badge: "✔ Suitable for All India",
+          isTrending: true,
+          category: "Citrus",
+          specs: {
+            growth: "Medium",
+            fruitSize: "Large",
+            yield: "Very High",
+            climate: "All India",
+            maintenance: "Medium",
+          },
+        },
+        {
+          id: "p_3",
+          name: "Malaysian Green Coconut",
+          price: 550,
+          rating: 4.7,
+          reviews: 89,
+          image: "./img/malaysian-green-coconut.jpg",
+          badge: "✔ High Yielding",
+          isTrending: true,
+          category: "Coconut",
+          specs: {
+            growth: "Slow",
+            fruitSize: "Very Large",
+            yield: "High (Year-round)",
+            climate: "Coastal/Tropical",
+            maintenance: "Low",
+          },
+        },
+        {
+          id: "p_4",
+          name: "Thai Guava (Seedless)",
+          price: 250,
+          rating: 4.6,
+          reviews: 230,
+          image: "./img/thai-guava.jpg",
+          badge: "✔ Quick Fruiting",
+          isTrending: true,
+          category: "Fruit",
+          specs: {
+            growth: "Very Fast",
+            fruitSize: "Large",
+            yield: "High",
+            climate: "All India",
+            maintenance: "Low",
+          },
+        },
+        {
+          id: "p_5",
+          name: "Dragon Fruit (Red Flesh)",
+          price: 180,
+          rating: 4.5,
+          reviews: 67,
+          image:
+            "https://images.unsplash.com/photo-1527325678964-54921661f888?auto=format&fit=crop&w=400&q=80",
+          badge: "✔ Drought Tolerant",
+          isTrending: true,
+          category: "Cactus",
+          specs: {
+            growth: "Fast",
+            fruitSize: "Medium",
+            yield: "Medium",
+            climate: "Dry/Warm",
+            maintenance: "Very Low",
+          },
+        },
+        {
+          id: "p_6",
+          name: "Kagzi Lemon (All Season)",
+          price: 150,
+          rating: 4.9,
+          reviews: 412,
+          image: "./img/kagzi-lemon-plant.jpg",
+          badge: "✔ Essential",
+          isTrending: true,
+          category: "Citrus",
+          specs: {
+            growth: "Medium",
+            fruitSize: "Small",
+            yield: "Very High",
+            climate: "All India",
+            maintenance: "Low",
+          },
+        },
+      ];
+
+      const categories = [
+        {
+          name: "Exotic Fruits",
+          icon: "fa-apple-whole",
+          color: "bg-orange-100 text-orange-600",
+        },
+        {
+          name: "Native Trees",
+          icon: "fa-tree",
+          color: "bg-green-100 text-green-600",
+        },
+        {
+          name: "Citrus Varieties",
+          icon: "fa-lemon",
+          color: "bg-yellow-100 text-yellow-600",
+        },
+        {
+          name: "Indoor Plants",
+          icon: "fa-seedling",
+          color: "bg-teal-100 text-teal-600",
+        },
+        {
+          name: "Spices",
+          icon: "fa-pepper-hot",
+          color: "bg-red-100 text-red-600",
+        },
+      ];
+
+      // Initialize UI
+      function initApp() {
+        renderCategories();
+        renderProducts();
+        renderRecent(); // Just shows a subset for demo
+        createLeaves();
+        initGSAP();
+      }
+
+      // --- Notifications ---
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+
+        const bgColor =
+          type === "success" ? "bg-white" : "bg-red-500 text-white";
+        const iconColor = type === "success" ? "text-green-500" : "text-white";
+        const icon =
+          type === "success" ? "fa-check-circle" : "fa-triangle-exclamation";
+        const textColor = type === "success" ? "text-gray-800" : "text-white";
+
+        toast.className = `transform translate-x-full transition-all duration-300 ${bgColor} border-l-4 ${type === "success" ? "border-primary" : "border-red-700"} shadow-lg rounded p-4 flex items-center gap-3 w-72 pointer-events-auto`;
+        toast.innerHTML = `
+                <i class="fa-solid ${icon} ${iconColor} text-xl"></i>
+                <p class="font-semibold text-sm ${textColor}">${message}</p>
+            `;
+
+        container.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+          toast.classList.remove("translate-x-full");
+        });
+
+        // Remove after 3s
+        setTimeout(() => {
+          toast.classList.add("translate-x-full");
+          toast.classList.add("opacity-0");
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      // --- Rendering ---
+      function renderCategories() {
+        const container = document.getElementById("categories-container");
+        container.innerHTML = categories
+          .map(
+            (cat) => `
+                <div class="flex-shrink-0 w-32 md:w-40 bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center cursor-pointer hover:shadow-lg hover:border-primary transition-all group gs-reveal">
+                    <div class="w-16 h-16 mx-auto ${cat.color} rounded-full flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid ${cat.icon}"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 text-sm">${cat.name}</h4>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      function createProductCard(product) {
+        const inWishlist = wishlist.includes(product.id);
+        const inCompare = compareList.includes(product.id);
+
+        return `
+                <div class="glass-card rounded-2xl overflow-hidden group hover:-translate-y-2 transition-transform duration-300 flex flex-col gs-reveal product-card">
+                    <div class="relative h-64 product-img-wrap cursor-pointer" onclick="openGallery('${product.image}')">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                        <!-- Badges -->
+                        <div class="absolute top-2 left-2 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold text-primary shadow">
+                            ${product.badge}
+                        </div>
+                        <!-- Wishlist Btn -->
+                        <button onclick="event.stopPropagation(); toggleWishlist('${product.id}')" class="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors group/btn">
+                            <i id="heart-${product.id}" class="fa-solid fa-heart ${inWishlist ? "text-red-500 heart-active" : "text-gray-300 group-hover/btn:text-red-300"} transition-colors"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="text-xs text-gray-400 font-bold uppercase">${product.category}</span>
+                            <div class="flex text-yellow-400 text-[10px]">
+                                <i class="fa-solid fa-star"></i> ${product.rating} <span class="text-gray-400 ml-1">(${product.reviews})</span>
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-800 mb-2 line-clamp-2" title="${product.name}">${product.name}</h3>
+
+                        <div class="mt-auto">
+                            <div class="text-xl font-black text-primary mb-4">₹${product.price}</div>
+
+                            <div class="flex flex-col gap-2">
+                                <button onclick="addToCart('${product.id}', '${product.name}', ${product.price}, '${product.image}')" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                                    <i class="fa-solid fa-cart-plus"></i> Add
+                                </button>
+                                <label class="flex items-center justify-center gap-2 text-xs text-gray-500 cursor-pointer hover:text-primary transition-colors border border-gray-200 py-1.5 rounded-lg bg-gray-50">
+                                    <input type="checkbox" onchange="toggleCompare('${product.id}')" ${inCompare ? "checked" : ""} class="accent-primary w-3 h-3">
+                                    Compare Specs
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+      }
+
+      function renderProducts() {
+        const container = document.getElementById("products-grid");
+        const trending = products.filter((p) => p.isTrending);
+        container.innerHTML = trending.map(createProductCard).join("");
+      }
+
+      function renderRecent() {
+        const container = document.getElementById("recent-container");
+        // Show last 4 products as "recent" for demo
+        container.innerHTML = products
+          .slice(-4)
+          .map((p) => {
+            return createProductCard(p).replace(
+              "glass-card",
+              "glass-card w-72 flex-shrink-0",
+            );
+          })
+          .join("");
+      }
+
+      function toggleWishlist(id) {
+        const index = wishlist.indexOf(id);
+        const heartIcon = document.getElementById(`heart-${id}`);
+
+        if (index > -1) {
+          wishlist.splice(index, 1);
+          heartIcon.classList.remove("text-red-500", "heart-active");
+          heartIcon.classList.add("text-gray-300");
+          showToast("Removed from Wishlist", "info");
+        } else {
+          wishlist.push(id);
+          heartIcon.classList.remove("text-gray-300");
+          heartIcon.classList.add("text-red-500", "heart-active");
+          showToast("Added to Wishlist ❤️");
+        }
+        updateBadges();
+        renderWishlistItems();
+      }
+
+      function addToCart(id, name, price, image) {
+        const existing = cart.find((item) => item.id === id);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          cart.push({ id, name, price, image, qty: 1 });
+        }
+        showToast(`${name} added to cart!`);
+        updateBadges();
+        renderCartItems();
+
+        // Animate cart icon
+        const cartIcon =
+          document.querySelector(".fa-cart-shopping").parentElement;
+        gsap.fromTo(cartIcon, { scale: 1.2 }, { scale: 1, duration: 0.3 });
+      }
+
+      function updateCartQty(id, change) {
+        const item = cart.find((i) => i.id === id);
+        if (!item) return;
+
+        item.qty += change;
+        if (item.qty <= 0) {
+          cart = cart.filter((i) => i.id !== id);
+        }
+        updateBadges();
+        renderCartItems();
+      }
+
+      function removeFromCart(id) {
+        cart = cart.filter((i) => i.id !== id);
+        updateBadges();
+        renderCartItems();
+      }
+
+      function updateBadges() {
+        // Cart
+        const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+        document.getElementById("cart-count").textContent = cartCount;
+        document.getElementById("mobile-cart-count").textContent = cartCount;
+
+        // Wishlist
+        const wishCount = wishlist.length;
+        const wishBadge = document.getElementById("wishlist-count");
+        const mobWishBadge = document.getElementById("mobile-wishlist-count");
+
+        wishBadge.textContent = wishCount;
+        if (wishCount > 0) {
+          wishBadge.classList.remove("scale-0");
+          mobWishBadge.classList.remove("hidden");
+        } else {
+          wishBadge.classList.add("scale-0");
+          mobWishBadge.classList.add("hidden");
+        }
+      }
+
+      // Drawers Logic
+      const overlay = document.getElementById("drawer-overlay");
+      const cartDrawer = document.getElementById("cart-drawer");
+      const wishlistDrawer = document.getElementById("wishlist-drawer");
+
+      function toggleCartDrawer() {
+        const isClosed = cartDrawer.classList.contains("translate-x-full");
+        closeAllDrawers(); // close others first
+        if (isClosed) {
+          cartDrawer.classList.remove("translate-x-full");
+          showOverlay();
+          renderCartItems();
+        }
+      }
+
+      function toggleWishlistDrawer() {
+        const isClosed = wishlistDrawer.classList.contains("translate-x-full");
+        closeAllDrawers();
+        if (isClosed) {
+          wishlistDrawer.classList.remove("translate-x-full");
+          showOverlay();
+          renderWishlistItems();
+        }
+      }
+
+      function closeAllDrawers() {
+        cartDrawer.classList.add("translate-x-full");
+        wishlistDrawer.classList.add("translate-x-full");
+        hideOverlay();
+      }
+
+      function showOverlay() {
+        overlay.classList.remove("hidden");
+        setTimeout(() => overlay.classList.remove("opacity-0"), 10);
+        document.body.style.overflow = "hidden";
+      }
+
+      function hideOverlay() {
+        overlay.classList.add("opacity-0");
+        setTimeout(() => overlay.classList.add("hidden"), 300);
+        document.body.style.overflow = "";
+      }
+
+      function renderCartItems() {
+        const container = document.getElementById("cart-items-container");
+        const totalEl = document.getElementById("cart-total");
+
+        if (cart.length === 0) {
+          container.innerHTML = `
+                    <div class="text-center text-gray-400 mt-10" id="empty-cart-msg">
+                        <i class="fa-solid fa-basket-shopping text-4xl mb-3"></i>
+                        <p>Your cart is empty.</p>
+                    </div>
+                `;
+          totalEl.textContent = "₹0";
+          return;
+        }
+
+        let total = 0;
+
+        container.innerHTML = cart
+          .map((item) => {
+            total += item.price * item.qty;
+            return `
+                    <div class="flex gap-4 border-b pb-4">
+                        <img src="${item.image}" class="w-20 h-20 object-cover rounded-lg">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-gray-800 line-clamp-1">${item.name}</h4>
+                            <div class="text-primary font-bold mt-1">₹${item.price}</div>
+                            <div class="flex items-center justify-between mt-2">
+                                <div class="flex items-center border rounded-lg bg-gray-50">
+                                    <button onclick="updateCartQty('${item.id}', -1)" class="px-2 py-1 hover:bg-gray-200 transition text-gray-600">-</button>
+                                    <span class="px-2 text-sm font-bold w-6 text-center">${item.qty}</span>
+                                    <button onclick="updateCartQty('${item.id}', 1)" class="px-2 py-1 hover:bg-gray-200 transition text-gray-600">+</button>
+                                </div>
+                                <button onclick="removeFromCart('${item.id}')" class="text-red-400 hover:text-red-600 text-sm"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+
+        totalEl.textContent = `₹${total}`;
+      }
+
+      function renderWishlistItems() {
+        const container = document.getElementById("wishlist-items-container");
+        if (wishlist.length === 0) {
+          container.innerHTML = `
+                    <div class="text-center text-gray-400 mt-10">
+                        <i class="fa-regular fa-heart text-4xl mb-3"></i>
+                        <p>Your wishlist is empty.</p>
+                        <button onclick="closeAllDrawers()" class="text-primary underline mt-2 text-sm">Continue Shopping</button>
+                    </div>`;
+          return;
+        }
+
+        const items = products.filter((p) => wishlist.includes(p.id));
+        container.innerHTML = items
+          .map(
+            (item) => `
+                <div class="flex gap-4 border-b pb-4 items-center">
+                    <img src="${item.image}" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm text-gray-800 line-clamp-1">${item.name}</h4>
+                        <div class="text-primary font-bold text-sm mt-1">₹${item.price}</div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button onclick="addToCart('${item.id}', '${item.name}', ${item.price}, '${item.image}'); toggleWishlist('${item.id}')" class="bg-primary text-white text-xs px-3 py-1.5 rounded shadow hover:bg-primary-dark">To Cart</button>
+                        <button onclick="toggleWishlist('${item.id}')" class="text-xs text-gray-500 hover:text-red-500 underline">Remove</button>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      function toggleCompare(id) {
+        const index = compareList.indexOf(id);
+        if (index > -1) {
+          compareList.splice(index, 1);
+        } else {
+          if (compareList.length >= 3) {
+            showToast("You can compare max 3 items", "error");
+            // Uncheck the box
+            event.target.checked = false;
+            return;
+          }
+          compareList.push(id);
+          showToast("Added to compare list");
+        }
+
+        const btn = document.getElementById("compare-float-btn");
+        const count = document.getElementById("compare-float-count");
+        const mainCount = document.getElementById("compare-count");
+
+        count.textContent = compareList.length;
+        mainCount.textContent = compareList.length;
+
+        if (compareList.length > 0) {
+          btn.classList.remove("hidden");
+          btn.classList.add("flex");
+          mainCount.classList.remove("scale-0");
+        } else {
+          btn.classList.add("hidden");
+          btn.classList.remove("flex");
+          mainCount.classList.add("scale-0");
+        }
+      }
+
+      function openCompareModal() {
+        if (compareList.length === 0) {
+          showToast("Select products to compare first", "error");
+          return;
+        }
+
+        const modal = document.getElementById("compare-modal");
+        const thead = document.getElementById("compare-thead");
+        const tbody = document.getElementById("compare-tbody");
+
+        const items = products.filter((p) => compareList.includes(p.id));
+
+        // Headers
+        thead.innerHTML = `
+                <tr class="bg-gray-100">
+                    <th class="p-4 rounded-tl-lg font-bold text-gray-600">Feature</th>
+                    ${items
+                      .map(
+                        (item) => `<th class="p-4 text-center border-l w-[30%]">
+                        <img src="${item.image}" class="w-16 h-16 object-cover mx-auto rounded mb-2">
+                        <div class="font-bold text-sm">${item.name}</div>
+                        <div class="text-primary text-sm">₹${item.price}</div>
+                    </th>`,
+                      )
+                      .join("")}
+                </tr>
+            `;
+
+        // Rows
+        const specsList = [
+          "growth",
+          "fruitSize",
+          "yield",
+          "climate",
+          "maintenance",
+        ];
+        const labels = {
+          growth: "Growth Rate",
+          fruitSize: "Fruit Size",
+          yield: "Expected Yield",
+          climate: "Climate Suitability",
+          maintenance: "Maintenance Level",
+        };
+
+        tbody.innerHTML = specsList
+          .map(
+            (spec, i) => `
+                <tr class="border-b hover:bg-gray-50 transition-colors">
+                    <td class="p-4 font-semibold text-sm text-gray-700 bg-gray-50/50">${labels[spec]}</td>
+                    ${items.map((item) => `<td class="p-4 text-center text-sm border-l text-gray-600">${item.specs[spec]}</td>`).join("")}
+                </tr>
+            `,
+          )
+          .join("");
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeCompareModal() {
+        const modal = document.getElementById("compare-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        document.body.style.overflow = "";
+      }
+
+      function openGallery(imgSrc) {
+        const modal = document.getElementById("gallery-modal");
+        const img = document.getElementById("gallery-img");
+        img.src = imgSrc;
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+
+        // Small zoom animation
+        gsap.fromTo(
+          img,
+          { scale: 0.8, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" },
+        );
+      }
+
+      function closeGallery() {
+        const modal = document.getElementById("gallery-modal");
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+
+      function checkoutViaWhatsApp() {
+        if (cart.length === 0) return;
+
+        let message = `Hello Green Plant Nursery,\nI would like to order:\n\n`;
+        let total = 0;
+
+        cart.forEach((item) => {
+          message += `▪️ ${item.name} × ${item.qty} (₹${item.price * item.qty})\n`;
+          total += item.price * item.qty;
+        });
+
+        message += `\n*Total Price:* ₹${total}\n\nPlease share delivery details.`;
+
+        const encoded = encodeURIComponent(message);
+        window.open(`https://wa.me/918282016187?text=${encoded}`, "_blank");
+
+        // Optionally clear cart
+        // cart = []; renderCartItems(); updateBadges(); closeAllDrawers();
+      }
+
+      function orderDirectlyWhatsApp(name, price) {
+        const message = `Hello Green Plant Nursery,\nI would like to order:\n\n▪️ ${name} × 1\n*Price:* ₹${price}\n\nPlease share delivery details.`;
+        const encoded = encodeURIComponent(message);
+        window.open(`https://wa.me/918282016187?text=${encoded}`, "_blank");
+      }
+
+      // Animations & Observers
+      function initGSAP() {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Reveal elements on scroll
+        const reveals = document.querySelectorAll(".gs-reveal");
+        reveals.forEach((el) => {
+          gsap.fromTo(
+            el,
+            { autoAlpha: 0, y: 30 },
+            {
+              duration: 0.8,
+              autoAlpha: 1,
+              y: 0,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                toggleActions: "play none none none",
+              },
+            },
+          );
+        });
+
+        // Counters logic
+        const statSection = document.getElementById("stats-section");
+        if (statSection) {
+          ScrollTrigger.create({
+            trigger: statSection,
+            start: "top 80%",
+            once: true,
+            onEnter: () => {
+              const counters = document.querySelectorAll(".counter");
+              counters.forEach((counter) => {
+                const target = +counter.getAttribute("data-target");
+                const duration = 2000; // ms
+                const increment = target / (duration / 16); // 60fps
+                let current = 0;
+
+                const updateCounter = () => {
+                  current += increment;
+                  if (current < target) {
+                    counter.innerText = Math.ceil(current);
+                    requestAnimationFrame(updateCounter);
+                  } else {
+                    counter.innerText = target;
+                  }
+                };
+                updateCounter();
+              });
+            },
+          });
+        }
+
+        // Navbar Glass effect on scroll
+        window.addEventListener("scroll", () => {
+          const nav = document.getElementById("navbar");
+          if (window.scrollY > 10) {
+            nav.classList.add("shadow-md");
+          } else {
+            nav.classList.remove("shadow-md");
+          }
+
+          // Scroll progress
+          const winScroll =
+            document.body.scrollTop || document.documentElement.scrollTop;
+          const height =
+            document.documentElement.scrollHeight -
+            document.documentElement.clientHeight;
+          const scrolled = (winScroll / height) * 100;
+          document.getElementById("scroll-progress").style.width =
+            scrolled + "%";
+        });
+      }
+
+      function createLeaves() {
+        const container = document.getElementById("leaf-container");
+        const numLeaves = 10;
+        const svgs = [
+          `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%230B8F3A' d='M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L277.3 434.9l-82.5 74.3c-8.9 8-22.3 9-32.3 2.4s-14.7-18.1-11.5-29.4l41.6-145.5L16.2 240.2c-9.3-5-14.7-14.7-14-25.3s6.7-20 16.5-24l448-184c9.9-4.1 21.3-2.6 29.8 4.3z'/%3E%3C/svg%3E`,
+          `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%2374C041' d='M272 96c-78.6 0-145.1 81.5-183.6 136.2-17.1 24.2-29.7 48.7-38.3 69.8H16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h24.4c2.8 33.3 12.8 63.8 28.5 89.2 18.6 30.3 46 54.8 78.4 69.2C178.6 538.5 215.1 544 256 544c92.8 0 166-31.5 212.5-78 46.5-46.5 75.5-115.3 75.5-194 0-78.7-29-147.5-75.5-194C422 31.5 348.8 0 256 0h-16c-8.8 0-16 7.2-16 16v64c0 8.8 7.2 16 16 16h16c68.5 0 120.9 20.6 153.2 52.8 22.3 22.3 39.5 54.2 46.5 91.2H272z'/%3E%3C/svg%3E`,
+        ];
+
+        for (let i = 0; i < numLeaves; i++) {
+          let leaf = document.createElement("div");
+          leaf.className = "leaf";
+          leaf.style.backgroundImage = `url("${svgs[Math.floor(Math.random() * svgs.length)]}")`;
+          leaf.style.left = Math.random() * 100 + "vw";
+          leaf.style.width = Math.random() * 20 + 10 + "px";
+          leaf.style.height = leaf.style.width;
+          container.appendChild(leaf);
+
+          animateLeaf(leaf);
+        }
+      }
+
+      function animateLeaf(leaf) {
+        gsap.to(leaf, {
+          y: window.innerHeight + 100,
+          x: "+=" + (Math.random() * 100 - 50),
+          rotation: Math.random() * 360,
+          duration: Math.random() * 5 + 5,
+          ease: "none",
+          onComplete: () => {
+            gsap.set(leaf, { y: -50, x: Math.random() * window.innerWidth });
+            animateLeaf(leaf);
+          },
+        });
+      }
+
+      // Initialize App on load
+      window.addEventListener("DOMContentLoaded", initApp);
+    </script>
+  </body>
+</html>
